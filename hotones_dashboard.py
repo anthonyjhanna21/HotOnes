@@ -170,6 +170,9 @@ st.markdown(
 # ---- 3. Show Format Changes Over Time ----
 st.subheader("Show Format Changes Over Time")
 
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+
 # Group by season to capture format evolution metrics
 format_trends = (
     df.groupby("Season")
@@ -189,36 +192,36 @@ format_trends = (
 # Convert completion rate to %
 format_trends["Completion Rate %"] = format_trends["Completion Rate"] * 100
 
-# --- Plot (Overlayed but Single Axis Safe for Streamlit Cloud) ---
-import plotly.graph_objects as go
+# --- Proper dual-axis version (Streamlit-safe) ---
+fig3 = make_subplots(specs=[[{"secondary_y": True}]])
 
-fig3 = go.Figure()
-
-# Line for Avg Scoville
-fig3.add_trace(go.Scatter(
-    x=format_trends["Season"],
-    y=format_trends["Avg Scoville (SHU)"] / 1000,  # scaled for same axis
-    name="Avg Scoville (Heat, ÷1000)",
-    mode="lines+markers",
-    line=dict(color="#F26419", width=3)
-))
-
-# Line for Completion Rate
-fig3.add_trace(go.Scatter(
-    x=format_trends["Season"],
-    y=format_trends["Completion Rate %"],
-    name="Completion Rate (%)",
-    mode="lines+markers",
-    line=dict(color="#3366CC", width=3, dash="dot")
-))
-
-fig3.update_layout(
-    title=dict(
-        text="Evolution of Heat Intensity and Completion Rate by Season",
-        x=0.5
+# Avg Scoville (orange line)
+fig3.add_trace(
+    go.Scatter(
+        x=format_trends["Season"],
+        y=format_trends["Avg Scoville (SHU)"],
+        name="Avg Scoville (Heat)",
+        mode="lines+markers",
+        line=dict(color="#F26419", width=3)
     ),
-    xaxis_title="Season",
-    yaxis_title="Scaled Metrics (Completion % & Avg Scoville ÷1000)",
+    secondary_y=False
+)
+
+# Completion Rate (blue dotted line)
+fig3.add_trace(
+    go.Scatter(
+        x=format_trends["Season"],
+        y=format_trends["Completion Rate %"],
+        name="Completion Rate (%)",
+        mode="lines+markers",
+        line=dict(color="#3366CC", width=3, dash="dot")
+    ),
+    secondary_y=True
+)
+
+# Layout and axis formatting
+fig3.update_layout(
+    title="Evolution of Heat Intensity and Completion Rate by Season",
     height=600,
     margin=dict(t=100, b=60, l=60, r=80),
     legend=dict(
@@ -227,7 +230,23 @@ fig3.update_layout(
         y=-0.25,
         xanchor="center",
         x=0.5
-    )
+    ),
+    xaxis_title="Season"
+)
+
+fig3.update_yaxes(
+    title_text="Avg Scoville (SHU)",
+    titlefont=dict(color="#F26419"),
+    tickfont=dict(color="#F26419"),
+    secondary_y=False
+)
+
+fig3.update_yaxes(
+    title_text="Completion Rate (%)",
+    titlefont=dict(color="#3366CC"),
+    tickfont=dict(color="#3366CC"),
+    range=[70, 105],
+    secondary_y=True
 )
 
 st.plotly_chart(fig3, use_container_width=True)
