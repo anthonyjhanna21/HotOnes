@@ -170,8 +170,8 @@ st.markdown(
 # ---- 3. Show Format Changes Over Time ----
 st.subheader("Show Format Changes Over Time")
 
-from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Group by season to capture format evolution metrics
 format_trends = (
@@ -192,10 +192,10 @@ format_trends = (
 # Convert completion rate to %
 format_trends["Completion Rate %"] = format_trends["Completion Rate"] * 100
 
-# --- Proper dual-axis version (Streamlit-safe) ---
+# --- Dual-axis chart, fully Streamlit-safe ---
 fig3 = make_subplots(specs=[[{"secondary_y": True}]])
 
-# Avg Scoville (orange line)
+# Avg Scoville (orange)
 fig3.add_trace(
     go.Scatter(
         x=format_trends["Season"],
@@ -207,7 +207,7 @@ fig3.add_trace(
     secondary_y=False
 )
 
-# Completion Rate (blue dotted line)
+# Completion Rate (blue)
 fig3.add_trace(
     go.Scatter(
         x=format_trends["Season"],
@@ -219,39 +219,36 @@ fig3.add_trace(
     secondary_y=True
 )
 
-# Layout and axis formatting
+# Axis formatting using update_yaxes individually
+fig3.update_yaxes(
+    title_text="Avg Scoville (SHU)",
+    title_font=dict(color="#F26419"),
+    tickfont=dict(color="#F26419"),
+    secondary_y=False
+)
+
+fig3.update_yaxes(
+    title_text="Completion Rate (%)",
+    title_font=dict(color="#3366CC"),
+    tickfont=dict(color="#3366CC"),
+    range=[70, 105],
+    secondary_y=True
+)
+
+# Layout
 fig3.update_layout(
-    title="Evolution of Heat Intensity and Completion Rate by Season",
+    title=dict(text="Evolution of Heat Intensity and Completion Rate by Season", x=0.5),
     height=600,
     margin=dict(t=100, b=60, l=60, r=80),
+    xaxis_title="Season",
     legend=dict(
         orientation="h",
         yanchor="bottom",
         y=-0.25,
         xanchor="center",
         x=0.5
-    ),
-    xaxis_title="Season"
-)
-
-# Left (primary) Y-axis
-fig3.update_layout(
-    yaxis=dict(
-        title="Avg Scoville (SHU)",
-        titlefont=dict(color="#F26419"),
-        tickfont=dict(color="#F26419")
-    ),
-    yaxis2=dict(
-        title="Completion Rate (%)",
-        titlefont=dict(color="#3366CC"),
-        tickfont=dict(color="#3366CC"),
-        range=[70, 105],
-        overlaying="y",
-        side="right"
     )
 )
-
-
 
 st.plotly_chart(fig3, use_container_width=True)
 
