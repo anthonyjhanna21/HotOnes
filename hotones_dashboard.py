@@ -205,15 +205,33 @@ fig3.add_trace(go.Scatter(
     hovertemplate="Season %{x}<br>Completion Rate: %{y:.2f}%<extra></extra>"  # ← added
 ))
 fig3.update_layout(
-    title="Evolution of Heat Intensity and Completion Rate by Season",
-    xaxis=dict(title="Season"),
-    yaxis=dict(title="Avg Scoville (SHU)", titlefont=dict(color="#F26419"), tickfont=dict(color="#F26419")),
-    yaxis2=dict(title="Completion Rate (%)", titlefont=dict(color="#3366CC"),
-                tickfont=dict(color="#3366CC"), overlaying="y", side="right", tickformat=".0f"),
+    title_text="Evolution of Heat Intensity and Completion Rate by Season",
+    xaxis_title="Season",
+    yaxis_title="Avg Scoville (SHU)",
+    yaxis=dict(
+        titlefont=dict(color="#F26419"),
+        tickfont=dict(color="#F26419"),
+        showgrid=False
+    ),
+    yaxis2=dict(
+        title="Completion Rate (%)",
+        titlefont=dict(color="#3366CC"),
+        tickfont=dict(color="#3366CC"),
+        overlaying="y",
+        side="right",
+        tickformat=".0f"
+    ),
     height=600,
     margin=dict(t=100, b=60, l=60, r=80),
-    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.25,
+        xanchor="center",
+        x=0.5
+    )
 )
+
 st.plotly_chart(fig3, use_container_width=True)
 
 st.markdown(
