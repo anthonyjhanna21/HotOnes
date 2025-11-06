@@ -167,9 +167,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- Show Format Changes Over Time ---
+# ---- 3. Show Format Changes Over Time ----
 st.subheader("Show Format Changes Over Time")
 
+# Group by season to capture format evolution metrics
 format_trends = (
     df.groupby("Season")
       .agg({
@@ -184,60 +185,53 @@ format_trends = (
           "Guest": "Total Guests"
       })
 )
+
+# Convert completion rate to %
 format_trends["Completion Rate %"] = format_trends["Completion Rate"] * 100
 
+# --- Plot (Overlayed but Single Axis Safe for Streamlit Cloud) ---
+import plotly.graph_objects as go
+
 fig3 = go.Figure()
+
+# Line for Avg Scoville
 fig3.add_trace(go.Scatter(
     x=format_trends["Season"],
-    y=format_trends["Avg Scoville (SHU)"],
-    name="Avg Scoville (Heat)",
+    y=format_trends["Avg Scoville (SHU)"] / 1000,  # scaled for same axis
+    name="Avg Scoville (Heat, ÷1000)",
     mode="lines+markers",
-    line=dict(color="#F26419", width=3),
-    hovertemplate="Season %{x}<br>Avg Scoville: %{y:,.2f}<extra></extra>"  # ← added
+    line=dict(color="#F26419", width=3)
 ))
+
+# Line for Completion Rate
 fig3.add_trace(go.Scatter(
     x=format_trends["Season"],
     y=format_trends["Completion Rate %"],
     name="Completion Rate (%)",
     mode="lines+markers",
-    line=dict(color="#3366CC", width=3, dash="dot"),
-    yaxis="y2",
-    hovertemplate="Season %{x}<br>Completion Rate: %{y:.2f}%<extra></extra>"  # ← added
+    line=dict(color="#3366CC", width=3, dash="dot")
 ))
+
 fig3.update_layout(
     title=dict(
         text="Evolution of Heat Intensity and Completion Rate by Season",
         x=0.5
     ),
     xaxis_title="Season",
-    yaxis_title="Avg Scoville (SHU)",
+    yaxis_title="Scaled Metrics (Completion % & Avg Scoville ÷1000)",
     height=600,
     margin=dict(t=100, b=60, l=60, r=80),
-    legend_orientation="h",
-    legend_yanchor="bottom",
-    legend_y=-0.25,
-    legend_xanchor="center",
-    legend_x=0.5
-)
-
-# explicitly style the y-axes after layout
-fig3.update_yaxes(
-    title_font=dict(color="#F26419"),
-    tickfont=dict(color="#F26419"),
-    showgrid=False,
-    secondary_y=False
-)
-fig3.update_yaxes(
-    title="Completion Rate (%)",
-    title_font=dict(color="#3366CC"),
-    tickfont=dict(color="#3366CC"),
-    overlaying="y",
-    side="right",
-    tickformat=".0f",
-    secondary_y=True
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.25,
+        xanchor="center",
+        x=0.5
+    )
 )
 
 st.plotly_chart(fig3, use_container_width=True)
+
 
 st.markdown(
     """
