@@ -234,20 +234,24 @@ fig3.update_layout(
     xaxis_title="Season"
 )
 
-fig3.update_yaxes(
-    title_text="Avg Scoville (SHU)",
-    titlefont=dict(color="#F26419"),
-    tickfont=dict(color="#F26419"),
-    secondary_y=False
+# Left (primary) Y-axis
+fig3.update_layout(
+    yaxis=dict(
+        title="Avg Scoville (SHU)",
+        titlefont=dict(color="#F26419"),
+        tickfont=dict(color="#F26419")
+    ),
+    yaxis2=dict(
+        title="Completion Rate (%)",
+        titlefont=dict(color="#3366CC"),
+        tickfont=dict(color="#3366CC"),
+        range=[70, 105],
+        overlaying="y",
+        side="right"
+    )
 )
 
-fig3.update_yaxes(
-    title_text="Completion Rate (%)",
-    titlefont=dict(color="#3366CC"),
-    tickfont=dict(color="#3366CC"),
-    range=[70, 105],
-    secondary_y=True
-)
+
 
 st.plotly_chart(fig3, use_container_width=True)
 
